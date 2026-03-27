@@ -140,6 +140,7 @@ export const FeishuGroupSchema = z.object({
   groupPolicy: GroupPolicyEnum.optional(),
   requireMention: z.boolean().optional(),
   respondToMentionAll: z.boolean().optional(),
+  threadSession: z.boolean().optional(),
   tools: ToolPolicySchema,
   skills: z.array(z.string()).optional(),
   enabled: z.boolean().optional(),

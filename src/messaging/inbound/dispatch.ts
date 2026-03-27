@@ -184,7 +184,8 @@ export async function dispatchToAgent(params: {
   //     without thread_id.  When threadSession is enabled, use root_id as
   //     a synthetic threadId so replies stay inside the topic instead of
   //     creating a new top-level message.
-  if (!dc.isThread && dc.isGroup && dc.ctx.rootId && dc.account.config?.threadSession === true) {
+  const effectiveThreadSession = params.groupConfig?.threadSession ?? dc.account.config?.threadSession;
+  if (!dc.isThread && dc.isGroup && dc.ctx.rootId && effectiveThreadSession === true) {
     const threadCapable = await isThreadCapableGroup({
       cfg: dc.accountScopedCfg,
       chatId: dc.ctx.chatId,
@@ -202,6 +203,7 @@ export async function dispatchToAgent(params: {
     dc.threadSessionKey = await resolveThreadSessionKey({
       accountScopedCfg: dc.accountScopedCfg,
       account: dc.account,
+      groupConfig: params.groupConfig,
       chatId: dc.ctx.chatId,
       threadId: dc.ctx.threadId,
       baseSessionKey: dc.route.sessionKey,

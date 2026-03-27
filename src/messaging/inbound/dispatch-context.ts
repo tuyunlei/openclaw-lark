@@ -12,7 +12,7 @@
 import type { ClawdbotConfig, RuntimeEnv } from 'openclaw/plugin-sdk';
 import { resolveThreadSessionKeys } from 'openclaw/plugin-sdk/routing';
 import type { MessageContext } from '../types';
-import type { LarkAccount } from '../../core/types';
+import type { FeishuGroupConfig, LarkAccount } from '../../core/types';
 import { LarkClient } from '../../core/lark-client';
 import { larkLogger } from '../../core/lark-logger';
 import { isThreadCapableGroup } from '../../core/chat-info-cache';
@@ -150,7 +150,7 @@ export function buildDispatchContext(params: {
  * Resolve thread session key for thread-capable groups.
  *
  * Returns a thread-scoped session key when ALL conditions are met:
- *   1. `threadSession` config is enabled on the account
+ *   1. `threadSession` is enabled for the group, or falls back to the account
  *   2. The group is a topic group (chat_mode=topic) or uses thread
  *      message mode (group_message_type=thread)
  *
@@ -160,13 +160,15 @@ export function buildDispatchContext(params: {
 export async function resolveThreadSessionKey(params: {
   accountScopedCfg: ClawdbotConfig;
   account: LarkAccount;
+  groupConfig?: FeishuGroupConfig;
   chatId: string;
   threadId: string;
   baseSessionKey: string;
 }): Promise<string | undefined> {
-  const { accountScopedCfg, account, chatId, threadId, baseSessionKey } = params;
+  const { accountScopedCfg, account, groupConfig, chatId, threadId, baseSessionKey } = params;
 
-  if (account.config?.threadSession !== true) return undefined;
+  const effective = groupConfig?.threadSession ?? account.config?.threadSession;
+  if (effective !== true) return undefined;
 
   const threadCapable = await isThreadCapableGroup({
     cfg: accountScopedCfg,

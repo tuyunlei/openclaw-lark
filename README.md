@@ -74,3 +74,20 @@ For major changes, we recommend discussing with us first via an Issue.
 ## License
 
 This project is licensed under the **MIT License**. See [LICENSE](./LICENSE.md) for details.
+
+### `threadSession` per-group override
+
+`channels.feishu.threadSession` remains the account-level default. You can now override it per group, and the group-level value takes precedence when present:
+
+```yaml
+channels:
+  feishu:
+    threadSession: false
+    groups:
+      oc_xxx:
+        threadSession: true
+      oc_yyy:
+        threadSession: false
+```
+
+If a group does not define `threadSession`, the account-level setting is used.

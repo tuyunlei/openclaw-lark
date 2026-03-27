@@ -162,7 +162,11 @@ export async function resolveReactionContext(params: {
   // only for thread-capable groups (topic / thread-mode); p2p and regular
   // groups are unaffected since they have no threads.
   let threadCapable = false;
-  const threadSessionEnabled = account.config?.threadSession === true;
+  const groupConfig =
+    rawChatId && chatType === 'group'
+      ? resolveFeishuGroupConfig({ cfg: account.config, groupId: rawChatId })
+      : undefined;
+  const threadSessionEnabled = (groupConfig?.threadSession ?? account.config?.threadSession) === true;
   if (rawChatId && chatType === 'group') {
     threadCapable = await isThreadCapableGroup({ cfg, chatId: rawChatId, accountId });
     if (threadSessionEnabled && threadCapable) {
